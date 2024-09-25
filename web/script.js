@@ -1,21 +1,21 @@
-// get input field 
+// get input field
 const inputField = document.getElementById('input')
 
 // function to focus the input field
-function focusInput() {
-  inputField.focus();
+function focusInput () {
+  inputField.focus()
 }
 
-// focus input field when loading 
-window.onload = focusInput;
+// focus input field when loading
+window.onload = focusInput
 
 // focus input field when clicking anywhere
-document.addEventListener('click', focusInput);
+document.addEventListener('click', focusInput)
 
-// 
+//
 document.addEventListener('DOMContentLoaded', function () {
   const outputDiv = document.getElementById('output')
-  const fileInput = document.getElementById('fileInput');
+  const fileInput = document.getElementById('fileInput')
 
   const listOfCommands = [
     'help\n\t\t- prints this screen',
@@ -24,8 +24,8 @@ document.addEventListener('DOMContentLoaded', function () {
     'download [filename]\n\t\t- download a file',
     'upload [filename]\n\t\t- open upload dialog',
     'mv [source] [dest]\n\t\t- move a file from source to dest',
-    'grep [string or regex]\n\t\t- list only files whos name contains string or regex',
-    'rm [source]\n\t\t- delete the file', 
+    "grep [string or regex]\n\t\t- list only files who's name contains string or regex",
+    'rm [source]\n\t\t- delete the file',
     'cd [dest]\n\t\t- change the current working directory to dest'
   ]
 
@@ -33,16 +33,16 @@ document.addEventListener('DOMContentLoaded', function () {
   let commandHistory = []
   let historyIndex = 0
 
-  const apiUrl = 'http://localhost:5000/'
+  const apiUrl = 'http://localhost:50505/'
 
   // A simple command processor
   function processCommand (command) {
     // if (command == 'exit') {
     //   window.close();
-    //   return 
+    //   return
     // }
     // Scripts may only close windows that were opened by a script.
-    
+
     if (command == 'clear') {
       outputDiv.innerHTML = ''
       return
@@ -55,8 +55,8 @@ document.addEventListener('DOMContentLoaded', function () {
       return
     }
     if (command == 'upload') {
-      fileInput.click();
-      return 
+      fileInput.click()
+      return
     }
     fetch(apiUrl + 'command/' + command).then(response => {
       if (response.ok) {
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function appendToOutput (text) {
     text = text.replace(/\n/g, '<br>')
-    text = text.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+    text = text.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
     const p = document.createElement('p')
     p.innerHTML = text // Use innerHTML to render the HTML
     outputDiv.appendChild(p)
@@ -102,4 +102,3 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   })
 })
-

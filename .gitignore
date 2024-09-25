@@ -4,6 +4,7 @@
 # Ignore libraries
 libraries
 include
+data
 
 # Ignore shellscripts
 *.sh

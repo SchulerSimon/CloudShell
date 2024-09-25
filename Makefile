@@ -1,14 +1,14 @@
 # Compiler and flags
 CXX = g++
-CXXFLAGS = -I ./include -pthread -Wall -g
+CXXFLAGS = -I ./include -pthread -Wall -g -std=c++17 
 
 # Source files and target
-SRC = main.cpp
-TARGET = main.out
+SRC = src/*.cpp 
+TARGET = build/server.out
 
 # Build rule
 $(TARGET): $(SRC)
-	$(CXX) $(CXXFLAGS) $(SRC) -o $(TARGET)
+	$(CXX) $(CXXFLAGS) $(SRC) -o $(TARGET) 
 
 # Clean rule to remove the output binary
 clean:

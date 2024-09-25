@@ -12,6 +12,7 @@ This project is nowhere near finished. I am currently preparing for a new job th
 
 ## Dependencies
 This project uses [Crow](https://github.com/CrowCpp/Crow). If you want to compile it yourself, put the `crow/include` into `./include`. You also need [Asio](https://think-async.com/Asio/), because its a requirement of Crow. 
+This project uses [nlohmann/json](https://github.com/nlohmann/json) for de-/serializing objects. 
 
 ## Contributions
 If you have Ideas and the time to make them work, feel free, to open a PR. Every PR is welcome. 

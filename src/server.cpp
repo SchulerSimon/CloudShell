@@ -2,39 +2,36 @@
 #include <crow.h>
 #include <fstream>
 #include <sstream>
-#include <iostream>
 #include <filesystem>
+
+#include "filehandler.cpp"
 
 using namespace std;
 using namespace crow;
+using namespace filehandler;
 
-string read_file(const string &filename)
+/**
+ * @brief Reads a file and returns its content
+ *
+ * @param fileName the name of the file
+ * @return string the content of the file
+ */
+string readStaticFile(const string &fileName)
 {
-    ifstream file(filename);
+    ifstream file(fileName);
     if (!file.is_open())
     {
-        throw runtime_error("Unable to open file: " + filename);
+        throw runtime_error("Unable to open file: " + fileName);
     }
     stringstream buffer;
     buffer << file.rdbuf();
     return buffer.str();
 }
 
-void create_file(const string &filename, const string &content)
-{
-    ofstream file(filename);
-    if (file.is_open())
-    {
-        file << content;
-    }
-    else
-    {
-        throw runtime_error("Unable to open file");
-    }
-    file.close();
-}
-
-int main()
+/**
+ * @brief Starts a REST server, that servers the application
+ */
+void startServer()
 {
     SimpleApp app;
 
@@ -42,7 +39,7 @@ int main()
     ([]()
      {
         try {
-            string htmlContent = read_file("web/index.html");
+            string htmlContent = readStaticFile("web/index.html");
             return response(200, htmlContent);
         } catch (const exception& e) {
             return response(404, "HTML file not found.");
@@ -52,7 +49,7 @@ int main()
     ([]()
      {
         try {
-            std::string jsContent = read_file("web/script.js");
+            std::string jsContent = readStaticFile("web/script.js");
             return response(200, jsContent);
         } catch (const std::exception& e) {
             return response(404, "JS file not found.");
@@ -62,17 +59,17 @@ int main()
     ([]()
      {
         try {
-            std::string cssContent = read_file("web/style.css");
+            std::string cssContent = readStaticFile("web/style.css");
             return response(200, cssContent);
         } catch (const std::exception& e) {
             return response(404, "CSS file not found.");
         } });
 
-    CROW_ROUTE(app, "/favicons/favicon-32x32.png")
+    CROW_ROUTE(app, "/favicon/favicon-32x32.png")
     ([]()
      {
         try {
-            string faviconContent = read_file("web/favicon/favicon-16x16.png");
+            string faviconContent = readStaticFile("web/favicon/favicon-16x16.png");
             return response(200, faviconContent);
         } catch (const std::exception& e) {
             return response(404, "favicon not found.");
@@ -87,7 +84,12 @@ int main()
             return response(200, "command not found");
         } });
 
-    app.port(5000).multithreaded().run();
+    app.port(50505).multithreaded().run();
+}
 
+int main()
+{
+    filehandler::File f("filename.txt", "test/", "hello world");
+    cout << f.serialize() << endl;
     return 0;
 }
