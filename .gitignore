@@ -5,6 +5,9 @@
 libraries
 include
 
+# Ignore shellscripts
+*.sh
+
 # Prerequisites
 *.d
 
