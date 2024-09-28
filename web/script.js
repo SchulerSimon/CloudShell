@@ -53,7 +53,9 @@ document.addEventListener('DOMContentLoaded', function () {
       fileInput.click()
       return
     }
-    // todo split command when " "
+    let temp = command.split(' ', 1)
+    command = temp[0]
+    let params = temp[1]
     fetch(apiUrl + 'command/' + command, {
       method: 'POST',
       headers: {
@@ -61,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       body: JSON.stringify({
         path: path,
-        params: ''
+        params: params || ''
       })
     }).then(response => {
       if (response.ok) {

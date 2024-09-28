@@ -1,3 +1,4 @@
+#define CROW_ENABLE_DEBUG
 #include <crow.h>
 
 #include <filesystem>
@@ -60,22 +61,15 @@ void startServer() {
     CROW_ROUTE(app, "/favicon/favicon-32x32.png")
     ([]() {
         try {
-            string faviconContent = readStaticFile("web/favicon/favicon-16x16.png");
+            string faviconContent = readStaticFile("web/favicon/favicon-32x32.png");
             return response(200, faviconContent);
         } catch (const std::exception& e) { return response(404, "favicon not found."); }
     });
 
     CROW_ROUTE(app, "/command/<str>").methods("POST"_method)([](const crow::request& req, std::string command) {
-        // Parse JSON body from the request
-        nlohmann::json j = crow::json::load(req.body);
-        if (!j) { return crow::response(400, "Invalid JSON"); }
-
-        // Convert the JSON object to a string
-        std::string str = j.dump();
-        cout << str << endl;
         // Handle the "ls" command
         if (command == "ls") {
-            return crow::response(200, commands::ls(str));
+            return crow::response(200, commands::ls(string(req.body)));
         } else {
             return crow::response(404, "Command not found");
         }
