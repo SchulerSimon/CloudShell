@@ -70,6 +70,10 @@ void startServer() {
         // Handle the "ls" command
         if (command == "ls") {
             return crow::response(200, commands::ls(string(req.body)));
+        } else if (command == "mkdir") {
+            return crow::response(200, commands::mkdir(string(req.body)));
+        } else if (command == "cd") {
+            return crow::response(200, commands::cd(string(req.body)));
         } else {
             return crow::response(404, "Command not found");
         }

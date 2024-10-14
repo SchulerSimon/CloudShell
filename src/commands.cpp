@@ -24,12 +24,13 @@ inline string resolvePath(const string& path) {
 }
 
 static string ls(const string& json) {
+    // parse the json, resolve path, prepare result
     nlohmann::json j = nlohmann::json::parse(json);
     string path = j["path"];
     string actualPath = resolvePath(STORAGE_LOCATION + path);
     string params = j["params"];
-
-    string result;
+    nlohmann::json result;
+    result["path"] = path;
 
     // make sure, that directories exist.
     if (!fs::exists(actualPath)) {
@@ -38,14 +39,70 @@ static string ls(const string& json) {
     }
 
     FILE* pipe = popen(string("ls " + params + " " + actualPath).c_str(), "r");
-    if (!pipe) { return "{\"path\" : \"" + path + "\", \"error\" : \"Could not open Pipe\"}"; }
-    char buffer[128];
-    while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
-        result += buffer;
-        // cout << buffer;
+    if (!pipe) {
+        result["answer"] = "could not open PIPE";
+        return result.dump();
     }
+    string answer;
+    char buffer[128];
+    while (fgets(buffer, sizeof(buffer), pipe) != nullptr) { answer += buffer; }
     pclose(pipe);
-    cout << result << endl;
-    return "{\"path\" : \"" + path + "\", \"answer\" : \"" + result + "\"}";
+    result["answer"] = answer;
+    return result.dump();
 };
+
+static string cd(const string& json) {
+    // parse the json, resolve path, prepare result
+    nlohmann::json j = nlohmann::json::parse(json);
+    string path = j["path"];
+    string actualPath = resolvePath(STORAGE_LOCATION + path);
+    string name = j["params"];
+    nlohmann::json result;
+
+    // make sure, that directories exist.
+    if (!fs::exists(actualPath)) {
+        cout << "creating " << actualPath << endl;
+        fs::create_directories(actualPath);
+    }
+
+    if (!fs::exists(actualPath + "/" + name)) {
+        result["path"] = path;
+        result["answer"] = "could not find " + name;
+        return result.dump();
+    }
+
+    path += "/" + name;
+    result["path"] = path;
+    result["answer"] = "";
+    return result.dump();
+}
+
+static string mkdir(const string& json) {
+    // parse the json, resolve path, prepare result
+    nlohmann::json j = nlohmann::json::parse(json);
+    string path = j["path"];
+    string actualPath = resolvePath(STORAGE_LOCATION + path);
+    string name = j["params"];
+    nlohmann::json result;
+    result["path"] = path;
+
+    // make sure, that directories exist.
+    if (!fs::exists(actualPath)) {
+        cout << "creating " << actualPath << endl;
+        fs::create_directories(actualPath);
+    }
+
+    FILE* pipe = popen(string("mkdir " + actualPath + "/" + name).c_str(), "r");
+    if (!pipe) {
+        result["answer"] = "could not open PIPE";
+        return result.dump();
+    }
+    string answer;
+    char buffer[128];
+    while (fgets(buffer, sizeof(buffer), pipe) != nullptr) { answer += buffer; }
+    pclose(pipe);
+    result["answer"] = answer;
+    return result.dump();
+}
+
 };  // namespace commands

@@ -1,8 +1,14 @@
+let path = '/'
+// History to keep track of previous commands
+let commandHistory = []
+let historyIndex = 0
+
 // get input field
 const inputField = document.getElementById('input')
 
 // function to focus the input field
 function focusInput () {
+  inputField.value = path + ' $:'
   inputField.focus()
 }
 
@@ -29,15 +35,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // 'cd [dest]\n\t\t- change the current working directory to dest'
   ]
 
-  // History to keep track of previous commands
-  let commandHistory = []
-  let historyIndex = 0
-  let path = '/'
-
   const apiUrl = 'http://localhost:50505/'
 
   // A simple command processor
   function processCommand (command) {
+    command = command.split(' $:', 2)[1]
     if (command == 'clear') {
       outputDiv.innerHTML = ''
       return
@@ -53,9 +55,10 @@ document.addEventListener('DOMContentLoaded', function () {
       fileInput.click()
       return
     }
-    let temp = command.split(' ', 1)
+    let temp = command.split(' ', 2)
     command = temp[0]
     let params = temp[1]
+    console.log(command, params)
     fetch(apiUrl + 'command/' + command, {
       method: 'POST',
       headers: {
@@ -69,6 +72,8 @@ document.addEventListener('DOMContentLoaded', function () {
       if (response.ok) {
         response.json().then(json => {
           appendToOutput(json['answer'])
+          path = json['path']
+          inputField.value = path + ' $:'
         })
       }
     })
