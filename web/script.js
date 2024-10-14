@@ -1,4 +1,4 @@
-let path = '/'
+let path = '.'
 // History to keep track of previous commands
 let commandHistory = []
 let historyIndex = 0
@@ -8,7 +8,6 @@ const inputField = document.getElementById('input')
 
 // function to focus the input field
 function focusInput () {
-  inputField.value = path + ' $:'
   inputField.focus()
 }
 
@@ -39,13 +38,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // A simple command processor
   function processCommand (command) {
-    command = command.split(' $:', 2)[1]
     if (command == 'clear') {
       outputDiv.innerHTML = ''
       return
     }
     if (command == 'help') {
-      appendToOutput(
+      appendCommand(`> ${command + ' ' + (params || '')}`)
+      appendAnswer(
         'List of all supported commands:\n\t' +
           listOfCommands.toString().replace(new RegExp(',', 'g'), '\n\t')
       )
@@ -71,15 +70,22 @@ document.addEventListener('DOMContentLoaded', function () {
     }).then(response => {
       if (response.ok) {
         response.json().then(json => {
-          appendToOutput(json['answer'])
           path = json['path']
-          inputField.value = path + ' $:'
+          appendCommand(`> ${command + ' ' + (params || '')}`)
+          appendAnswer(json['answer'])
         })
       }
     })
   }
 
-  function appendToOutput (text) {
+  function appendCommand (text) {
+    const p = document.createElement('p')
+    p.innerHTML = path + '/$' + text // Use innerHTML to render the HTML
+    outputDiv.appendChild(p)
+    outputDiv.scrollTop = outputDiv.scrollHeight // Scroll to the bottom
+  }
+
+  function appendAnswer (text) {
     text = text.replace(/\n/g, '<br>')
     text = text.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
     const p = document.createElement('p')
@@ -92,7 +98,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (e.key === 'Enter') {
       const command = inputField.value.trim()
       if (command) {
-        appendToOutput(`> ${command}`)
         commandHistory.push(command)
         historyIndex = commandHistory.length
         processCommand(command)

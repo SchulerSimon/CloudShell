@@ -75,7 +75,7 @@ void startServer() {
         } else if (command == "cd") {
             return crow::response(200, commands::cd(string(req.body)));
         } else {
-            return crow::response(404, "Command not found");
+            return crow::response(200, commands::notFound(string(req.body)));
         }
     });
 
